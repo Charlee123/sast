@@ -13,12 +13,11 @@ pipeline {
   }
 
   environment {
-    DEBIAN_FRONTEND          = 'noninteractive'
-    CODEQL_VERSION           = 'latest'
+    DEBIAN_FRONTEND           = 'noninteractive'
+    CODEQL_VERSION            = 'latest'
     // Persist CodeQL packs/cache in the Jenkins workspace so subsequent builds are faster
-    // (workspace is volume-mounted into the Docker agent)
-    CODEQL_USER_CACHE_DIR    = "${WORKSPACE}/.codeql-cache"
-    CODEQL_NO_UPDATE_NOTIFIER= '1'
+    CODEQL_USER_CACHE_DIR     = "${WORKSPACE}/.codeql-cache"
+    CODEQL_NO_UPDATE_NOTIFIER = '1'
   }
 
   stages {
@@ -70,14 +69,14 @@ mkdir -p "${CODEQL_USER_CACHE_DIR}"
       }
     }
 
-    stage('Install Query Packs') {
+    stage('Fetch Query Packs') {
       steps {
         sh '''#!/usr/bin/env bash
 set -euo pipefail
-echo "[CodeQL] Installing query packs (idempotent; uses cache if present)..."
-# Install all three commonly used language packs; harmless if not used later
-./codeql pack install codeql/java-queries codeql/javascript-queries codeql/python-queries
-echo "[CodeQL] Query packs installed."
+echo "[CodeQL] Downloading standard query packs (idempotent; uses cache if present)..."
+# 'download' is the correct command for published packs; this populates ~/.codeql/packages (or CODEQL_USER_CACHE_DIR)
+./codeql pack download codeql/java-queries codeql/javascript-queries codeql/python-queries
+echo "[CodeQL] Query packs ready."
 '''
       }
     }
@@ -116,8 +115,6 @@ echo "[CodeQL] Analysing JavaScript/TypeScript code..."
             sh '''#!/usr/bin/env bash
 set -euo pipefail
 echo "[CodeQL] Analysing Python code..."
-# If your repo uses a venv, you can activate it before analysis; not required for pure static parse:
-# python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt || true
 ./codeql database create python-db --language=python --source-root=. --overwrite
 ./codeql database analyze python-db codeql/python-queries \
   --format=sarifv2.1.0 --output=python-results.sarif
