@@ -74,7 +74,7 @@ echo "[CodeQL] Analysing Java code..."
             sh '''#!/usr/bin/env bash
 set -euo pipefail
 echo "[CodeQL] Analysing JavaScript code..."
-./codeql database create js-db --language=javascript --source-root=.
+./codeql database create js-db --language=javascript --source-root=. --overwrite
 ./codeql database analyze js-db codeql/javascript-queries --format=sarifv2.1.0 --output=js-results.sarif
 '''
           }
@@ -85,7 +85,7 @@ echo "[CodeQL] Analysing JavaScript code..."
             sh '''#!/usr/bin/env bash
 set -euo pipefail
 echo "[CodeQL] Analysing Python code..."
-./codeql database create python-db --language=python --source-root=.
+./codeql database create python-db --language=python --source-root=. --overwrite
 ./codeql database analyze python-db codeql/python-queries --format=sarifv2.1.0 --output=python-results.sarif
 '''
           }
@@ -100,4 +100,5 @@ echo "[CodeQL] Analysing Python code..."
     }
   }
 }
+
 
