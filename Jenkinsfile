@@ -63,8 +63,8 @@ ln -sf /opt/codeql/codeql codeql
             sh '''#!/usr/bin/env bash
 set -euo pipefail
 echo "[CodeQL] Analysing Java code..."
-./codeql database create java-db --language=java --source-root=.
-./codeql database analyze java-db codeql/java-queries --format=sarifv2.1.0 --output=java-results.sarif
+./codeql database create python-db --language=python --source-root=. --overwrite
+./codeql database analyze python-db codeql/python-queries --format=sarifv2.1.0 --output=python-results.sarif
 '''
           }
         }
@@ -100,3 +100,4 @@ echo "[CodeQL] Analysing Python code..."
     }
   }
 }
+
